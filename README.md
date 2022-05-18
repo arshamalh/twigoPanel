@@ -1,2 +1,2 @@
-# twigoMonitor
+# twigoPanel
 twigo bot monitoring
