@@ -6,9 +6,7 @@ RUN npm run build
 
 FROM golang:1.18-alpine3.15 AS builder
 WORKDIR /app
-COPY main.go .
-COPY go.mod .
-COPY go.sum .
+COPY server .
 COPY --from=frontend /ui/public /ui
 RUN CGO_ENABLED=0 GOOS=linux go build -o main ./...
 
