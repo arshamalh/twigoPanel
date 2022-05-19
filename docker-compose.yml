@@ -1,0 +1,33 @@
+version: '3,8'
+services:
+  twigo_panel:
+    build: .
+    container_name: twigo_panel
+    ports:
+      - "80:80"
+    networks:
+      - twigo_panel
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:10.20-alpine3.15
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: pg2local
+      POSTGRES_USER: admin
+      POSTGRES_DB: pg
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - twigo_panel
+
+volumes:
+  db:
+    driver: local
+
+networks:
+  twigo_panel:
+    driver: local
