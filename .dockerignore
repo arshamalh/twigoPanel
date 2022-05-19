@@ -1,0 +1,9 @@
+ui/node_modules
+ui/README.md
+ui/public/build
+.env
+docker-compose.yml
+Dockerfile
+.gitignore
+LICENSE
+README.md
