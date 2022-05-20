@@ -42,7 +42,11 @@ func main() {
 
 	app.Post("/tracking_users", AddTrackingUsers)
 
+	app.Get("/tracking_users", GetTrackingUsers)
+
 	app.Delete("/tracking_users", StopTrackingUsers)
+
+	app.Get("/tracking_tweets", GetTrackingTweets)
 
 	app.Delete("/tracking_tweets", StopTrackingTweets)
 

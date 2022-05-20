@@ -74,3 +74,10 @@ func StopTrackingTweets(ctx *fiber.Ctx) error {
 		"data": json_msgs,
 	})
 }
+
+func GetTrackingUsers(ctx *fiber.Ctx) error {
+	return fiber.ErrNotImplemented
+}
+func GetTrackingTweets(ctx *fiber.Ctx) error {
+	return fiber.ErrNotImplemented
+}
