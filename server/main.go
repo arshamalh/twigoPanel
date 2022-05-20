@@ -8,6 +8,7 @@ import (
 
 	"github.com/arshamalh/twigo"
 	"github.com/arshamalh/twigo/entities"
+	"github.com/arshamalh/twigoPanel/database"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -33,7 +34,14 @@ func main() {
 		fmt.Println(err)
 	}
 
-	// Initialize database
+	database.Connect(DBConfig{
+		User:     os.Getenv("POSTGRES_USER"),
+		Password: os.Getenv("POSTGRES_PASSWORD"),
+		DBName:   os.Getenv("POSTGRES_DB"),
+	}.String())
+
+	database.AutoMigrate()
+
 	InitializeScheduler(time.UTC)
 
 	app := fiber.New()
