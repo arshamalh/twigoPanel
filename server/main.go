@@ -23,8 +23,6 @@ type TweetData struct {
 	PublicMetrics map[int64]entities.TweetPublicMetrics `json:"public_metrics"`
 }
 
-var tweet_authors = map[string]string{}
-var found_tweets = []string{}
 var bot *twigo.Client
 
 func main() {
@@ -40,13 +38,13 @@ func main() {
 
 	app := fiber.New()
 
+	app.Static("/", "./ui")
+
 	app.Post("/tracking_users", AddTrackingUsers)
 
 	app.Delete("/tracking_users", StopTrackingUsers)
 
 	app.Delete("/tracking_tweets", StopTrackingTweets)
-
-	app.Static("/", "./ui")
 
 	log.Fatal(app.Listen(":80"))
 }
