@@ -2,6 +2,16 @@ package main
 
 import "fmt"
 
+func remove(slice []string, s string) []string {
+	new_slice := []string{}
+	for _, v := range slice {
+		if v != s {
+			new_slice = append(new_slice, v)
+		}
+	}
+	return new_slice
+}
+
 func contains(arrayOfStrings []string, string_item string) bool {
 	for _, val := range arrayOfStrings {
 		if val == string_item {

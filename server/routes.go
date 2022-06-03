@@ -43,7 +43,7 @@ func StopTrackingUsers(ctx *fiber.Ctx) error {
 	for _, user_id := range user_ids {
 		var msg string
 		if err := scheduler.RemoveByTag(fmt.Sprintf("user_track_%s", user_id)); err == nil {
-			// tracking_users.Remove(user_id)
+			tracking_users = remove(tracking_users, user_id)
 			msg = fmt.Sprintf("tracking user %s stopped", user_id)
 		} else {
 			msg = fmt.Sprintf("could not stop tracking user %s", user_id)
@@ -66,7 +66,7 @@ func StopTrackingTweets(ctx *fiber.Ctx) error {
 	for _, tweet_id := range tweet_ids {
 		var msg string
 		if err := scheduler.RemoveByTag(fmt.Sprintf("tweet_track_%s", tweet_id)); err == nil {
-			// tracking_tweets.Remove(tweet_id)
+			tracking_tweets = remove(tracking_tweets, tweet_id)
 			msg = fmt.Sprintf("tracking tweet %s stopped", tweet_id)
 		} else {
 			msg = fmt.Sprintf("could not stop tracking tweet %s", tweet_id)

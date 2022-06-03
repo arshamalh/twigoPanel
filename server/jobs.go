@@ -9,8 +9,10 @@ import (
 )
 
 var tracking_tweets = []string{}
+var tracking_users = []string{}
 
 func TrackUser(user_id string) {
+	tracking_users = append(tracking_users, user_id)
 	start_time := time.Now().UTC().Add(-5 * time.Minute)
 	params := map[string]interface{}{"max_results": 5, "start_time": start_time, "tweet.fields": []string{"created_at"}}
 	user_tweets, _ := bot.GetUserTweets(user_id, params)
