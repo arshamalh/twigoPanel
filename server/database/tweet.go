@@ -44,3 +44,9 @@ func GetTweet(id string) Tweet {
 	DB.Preload("TweetPublicMetric").First(&tweet, id)
 	return tweet
 }
+
+func GetTweets(ids []string) []Tweet {
+	var tweets []Tweet
+	DB.Preload("TweetPublicMetric").Where("tweet_id IN (?)", ids).Find(&tweets)
+	return tweets
+}
