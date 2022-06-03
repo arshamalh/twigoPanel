@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/arshamalh/twigoPanel/database"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -79,12 +80,25 @@ func StopTrackingTweets(ctx *fiber.Ctx) error {
 }
 
 func GetTrackingUsers(ctx *fiber.Ctx) error {
-	return fiber.ErrNotImplemented
+	return ctx.Status(200).JSON(fiber.Map{
+		"data": tracking_users,
+	})
 }
+
 func GetTrackingTweets(ctx *fiber.Ctx) error {
-	return fiber.ErrNotImplemented
+	return ctx.Status(200).JSON(fiber.Map{
+		"data": tracking_tweets,
+	})
 }
 
 func GetTweetData(ctx *fiber.Ctx) error {
-	return fiber.ErrNotImplemented
+	var tweet_ids []string
+
+	if err := ctx.BodyParser(&tweet_ids); err != nil {
+		return err
+	}
+
+	return ctx.Status(200).JSON(fiber.Map{
+		"data": database.GetTweets(tweet_ids),
+	})
 }
