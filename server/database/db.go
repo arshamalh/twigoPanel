@@ -3,17 +3,16 @@ package database
 import (
 	"fmt"
 
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-var DBConnection *gorm.DB
+var DB *gorm.DB
 
 func Connect(dsn string) {
 	var err error
-	DBConnection, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-		SkipDefaultTransaction: true,
-	})
+	DB, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+
 	if err != nil {
 		panic("Failed to connect to database")
 	}
@@ -21,7 +20,7 @@ func Connect(dsn string) {
 }
 
 func AutoMigrate() {
-	err := DBConnection.AutoMigrate(User{}, Tweet{})
+	err := DB.AutoMigrate(User{}, Tweet{}, TweetPublicMetrics{})
 	if err != nil {
 		return
 	}

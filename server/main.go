@@ -34,11 +34,8 @@ func main() {
 		fmt.Println(err)
 	}
 
-	database.Connect(DBConfig{
-		User:     os.Getenv("POSTGRES_USER"),
-		Password: os.Getenv("POSTGRES_PASSWORD"),
-		DBName:   os.Getenv("POSTGRES_DB"),
-	}.String())
+	database.Connect("twigo.db")
+
 
 	database.AutoMigrate()
 
