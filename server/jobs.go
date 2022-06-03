@@ -5,21 +5,23 @@ import (
 	"time"
 
 	"github.com/arshamalh/twigo/entities"
+	"github.com/arshamalh/twigoPanel/database"
 )
 
-var tweet_authors = map[string]string{}
-var found_tweets = []string{}
+var tracking_tweets = []string{}
 
 func TrackUser(user_id string) {
 	start_time := time.Now().UTC().Add(-5 * time.Minute)
 	params := map[string]interface{}{"max_results": 5, "start_time": start_time, "tweet.fields": []string{"created_at"}}
 	user_tweets, _ := bot.GetUserTweets(user_id, params)
 	if len(user_tweets.Data) != 0 {
-		tweet_id := user_tweets.Data[0].ID
-		if !contains(found_tweets, tweet_id) {
-			fmt.Printf("A tweet found: https://twitter.com/i/web/status/%s\n", tweet_id)
-			scheduler.Every(5).Seconds().Tag(fmt.Sprintf("tweet_track_%s", tweet_id)).Do(TrackTweet, tweet_id)
-			found_tweets = append(found_tweets, tweet_id)
+		for _, tweet := range user_tweets.Data {
+			if !contains(tracking_tweets, tweet.ID) {
+				fmt.Printf("A tweet found: https://twitter.com/i/web/status/%s\n", tweet.ID)
+				job_tag := fmt.Sprintf("tweet_track_%s", tweet.ID)
+				scheduler.Every(5).Seconds().Tag(job_tag).Do(TrackTweet, tweet.ID)
+				tracking_tweets = append(tracking_tweets, tweet.ID)
+			}
 		}
 	}
 }
@@ -32,30 +34,39 @@ func TrackTweet(tweet_id string) {
 	}
 	tweet := response.Data
 	if tweet.ID != "" {
+		fmt.Printf("Collecting tweet data: %s\n", tweet.ID)
 		CollectTweetData(tweet)
 	}
 }
 
 func CollectTweetData(tweet entities.Tweet) {
-	fmt.Printf("Collecting tweet data: %s\n", tweet.ID)
-	item_id := fmt.Sprintf("tweet_%s_written_by_%s", tweet.ID, tweet.AuthorID)
-	if _, ok := tweet_authors[tweet.ID]; ok {
-		tweet_data := &TweetData{}
-		// TODO: Read tweet_data from db
-		fmt.Println(item_id)
-		fmt.Printf("%#v\n", tweet_data)
-		tweet_data.PublicMetrics[time.Now().Unix()] = tweet.PublicMetrics
-		// TODO: Write tweet_data on db
+	// check if tweet is already in the database, update it, otherwise insert it
+	if database.TweetExists(tweet.ID) {
+		// Insert new public metrics
+		database.InsertNewPublicMetric(&database.TweetPublicMetric{
+			TweetID:      tweet.ID,
+			RetweetCount: tweet.PublicMetrics.RetweetCount,
+			LikeCount:    tweet.PublicMetrics.LikeCount,
+			ReplyCount:   tweet.PublicMetrics.ReplyCount,
+			QuoteCount:   tweet.PublicMetrics.QuoteCount,
+		})
 	} else {
-		tweet_data := &TweetData{
-			CreatedAt:     tweet.CreatedAt,
-			AuthorID:      tweet.AuthorID,
-			ID:            tweet.ID,
+		// Insert tweet data
+		tweet_data := &database.Tweet{
+			TweetedAt:     tweet.CreatedAt,
+			UserTwitterID: tweet.AuthorID,
+			TweetID:       tweet.ID,
 			Text:          tweet.Text,
-			PublicMetrics: map[int64]entities.TweetPublicMetrics{},
+			PublicMetrics: []database.TweetPublicMetric{
+				{
+					TweetID:      tweet.ID,
+					RetweetCount: tweet.PublicMetrics.RetweetCount,
+					LikeCount:    tweet.PublicMetrics.LikeCount,
+					ReplyCount:   tweet.PublicMetrics.ReplyCount,
+					QuoteCount:   tweet.PublicMetrics.QuoteCount,
+				},
+			},
 		}
-		tweet_data.PublicMetrics[time.Now().Unix()] = tweet.PublicMetrics
-		// TODO: Write tweet_data on db
-		tweet_authors[tweet.ID] = tweet.AuthorID
+		database.InsertTweet(tweet_data)
 	}
 }

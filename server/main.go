@@ -7,22 +7,9 @@ import (
 	"time"
 
 	"github.com/arshamalh/twigo"
-	"github.com/arshamalh/twigo/entities"
 	"github.com/arshamalh/twigoPanel/database"
 	"github.com/gofiber/fiber/v2"
 )
-
-type User struct {
-	Name string
-}
-
-type TweetData struct {
-	CreatedAt     time.Time                             `json:"created_at"`
-	AuthorID      string                                `json:"author_id"`
-	ID            string                                `json:"id"`
-	Text          string                                `json:"text"`
-	PublicMetrics map[int64]entities.TweetPublicMetrics `json:"public_metrics"`
-}
 
 var bot *twigo.Client
 
@@ -36,7 +23,6 @@ func main() {
 
 	database.Connect("twigo.db")
 
-
 	database.AutoMigrate()
 
 	InitializeScheduler(time.UTC)
@@ -44,6 +30,8 @@ func main() {
 	app := fiber.New()
 
 	app.Static("/", "./ui")
+
+	// Add bots, get bots, remove bot routes, instead of reading them from env.
 
 	app.Post("/tracking_users", AddTrackingUsers)
 
@@ -54,6 +42,8 @@ func main() {
 	app.Get("/tracking_tweets", GetTrackingTweets)
 
 	app.Delete("/tracking_tweets", StopTrackingTweets)
+
+	app.Get("/tweet_data", GetTweetData)
 
 	log.Fatal(app.Listen(":80"))
 }

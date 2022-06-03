@@ -20,7 +20,7 @@ func Connect(dsn string) {
 }
 
 func AutoMigrate() {
-	err := DB.AutoMigrate(User{}, Tweet{}, TweetPublicMetrics{})
+	err := DB.AutoMigrate(User{}, Tweet{}, TweetPublicMetric{})
 	if err != nil {
 		return
 	}

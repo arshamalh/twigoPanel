@@ -16,6 +16,7 @@ func AddTrackingUsers(ctx *fiber.Ctx) error {
 
 	for _, user_id := range user_ids {
 		job_name := fmt.Sprintf("user_track_%s", user_id)
+		// TODO: interval time to check users for tweets should be configurable
 		_, err := scheduler.Every(5).Minutes().Tag(job_name).Do(TrackUser, user_id)
 		var msg string
 		if err == nil {
@@ -42,6 +43,7 @@ func StopTrackingUsers(ctx *fiber.Ctx) error {
 	for _, user_id := range user_ids {
 		var msg string
 		if err := scheduler.RemoveByTag(fmt.Sprintf("user_track_%s", user_id)); err == nil {
+			// tracking_users.Remove(user_id)
 			msg = fmt.Sprintf("tracking user %s stopped", user_id)
 		} else {
 			msg = fmt.Sprintf("could not stop tracking user %s", user_id)
@@ -64,6 +66,7 @@ func StopTrackingTweets(ctx *fiber.Ctx) error {
 	for _, tweet_id := range tweet_ids {
 		var msg string
 		if err := scheduler.RemoveByTag(fmt.Sprintf("tweet_track_%s", tweet_id)); err == nil {
+			// tracking_tweets.Remove(tweet_id)
 			msg = fmt.Sprintf("tracking tweet %s stopped", tweet_id)
 		} else {
 			msg = fmt.Sprintf("could not stop tracking tweet %s", tweet_id)
@@ -79,5 +82,9 @@ func GetTrackingUsers(ctx *fiber.Ctx) error {
 	return fiber.ErrNotImplemented
 }
 func GetTrackingTweets(ctx *fiber.Ctx) error {
+	return fiber.ErrNotImplemented
+}
+
+func GetTweetData(ctx *fiber.Ctx) error {
 	return fiber.ErrNotImplemented
 }
